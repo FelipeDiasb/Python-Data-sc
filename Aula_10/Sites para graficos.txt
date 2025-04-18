@@ -1,0 +1,7 @@
+https://medium.com/20-21/m%C3%BAltiplos-gr%C3%A1ficos-com-matplotlib-c4ba73510855
+
+
+https://matplotlib.org/stable/api/_type1font.html#module-matplotlib._type1font 
+
+
+Documentação
