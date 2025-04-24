@@ -1,0 +1,4 @@
+https://brasil.io/dataset/socios-brasil/empresas/
+
+
+https://www.kaggle.com/datasets/heptapod/titanic
