@@ -1,0 +1,106 @@
+import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+import matplotlib.pyplot as plt
+
+
+conexao = sqlite3.connect('meu_banco_de_dados.db')
+cursor = conexao.cursor()
+
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS pessoas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        idade INTEGER NOT NULL,
+        cidade TEXT NOT NULL
+    )
+''')
+conexao.commit()
+
+
+def inserir_dados():
+    nome = entrada_nome.get()
+    idade = entrada_idade.get()
+    cidade = entrada_cidade.get()
+
+    if nome and idade and cidade:
+        try:
+            idade = int(idade)
+            cursor.execute('INSERT INTO pessoas (nome, idade, cidade) VALUES (?, ?, ?)', (nome, idade, cidade))
+            conexao.commit()
+            messagebox.showinfo("Sucesso", "Dados inseridos com sucesso.")
+            entrada_nome.delete(0, tk.END)
+            entrada_idade.delete(0, tk.END)
+            entrada_cidade.delete(0, tk.END)
+        except ValueError:
+             messagebox.showerror("Erro", "Idade deve ser um número inteiro.")
+    else:
+         messagebox.showwarning("Aviso", "Todos os campos devem ser preenchidos.")
+        
+
+def exibir_grafico():
+    cursor.execute('SELECT nome, idade FROM pessoas')
+    dados = cursor.fetchall()
+    
+    if dados:
+        nomes = [dado[0] for dado in dados]
+        idades = [dado[1] for dado in dados]
+
+        plt.figure(figsize=(10, 5))
+        plt.bar(nomes, idades, color='skyblue')
+        plt.xlabel('Nome')
+        plt.ylabel('Idade')
+        plt.title('Idade das Pessoas')
+        plt.tight_layout()
+        plt.show()
+    else:
+        messagebox.showwarning("Erro", "Nenhum dado encontrado para exibir.")
+
+# Criar a janela principal
+janela = tk.Tk()
+janela.title("Cadastro de Pessoas")
+
+tk.Label(janela, text="Nome:").grid(row=0, column=0, padx=10, pady=5)
+entrada_nome = tk.Entry(janela)
+entrada_nome.grid(row=0, column=1, padx=10, pady=5)
+
+tk.Label(janela, text="Idade:").grid(row=1, column=0, padx=10, pady=5)
+entrada_idade = tk.Entry(janela)
+entrada_idade.grid(row=1, column=1, padx=10, pady=5)
+
+tk.Label(janela, text="Cidade:").grid(row=2, column=0, padx=10, pady=5)
+entrada_cidade = tk.Entry(janela)
+entrada_cidade.grid(row=2, column=1, padx=10, pady=5)
+
+
+btn_inserir = tk.Button(janela, text="Inserir Dados", command=inserir_dados,
+                   activebackground="blue", 
+                   activeforeground="white",
+                   anchor="center",
+                   bd=3,
+                   bg="lightgray",
+                   cursor="hand2",
+                   disabledforeground="gray",
+                   fg="black",
+                   font=("Arial", 10),
+                   height=2,
+                   highlightbackground="black",
+                   highlightcolor="green",
+                   highlightthickness=2,
+                   justify="center",
+                   overrelief="raised",
+                   padx=10,
+                   pady=5,
+                   width=10,
+                   wraplength=50)
+btn_inserir.grid(row=3, column=0, columnspan=2, pady=10)
+
+btn_grafico = tk.Button(janela, text="Exibir Gráfico", command=exibir_grafico)
+btn_grafico.grid(row=4, column=0, columnspan=2, pady=10)
+
+
+janela.mainloop()
+
+
+conexao.close()
